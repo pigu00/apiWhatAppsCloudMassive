@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 4000;
-// const sequelize = require("../db/database");
+const sequelize = require("../db/database");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 require('dotenv').config()
@@ -16,12 +16,14 @@ app.use(bodyParser.json());
 
 const token = process.env.TOKEN;
 
+
+//subscription webhooks
 app.get("/webhooks", (req, res) => {
   let mode = req.query["hub.mode"];
   let challenge = req.query["hub.challenge"];
   let token = req.query["hub.verify_token"];
 
-  const myToken =process.env.MYTOKEN;
+  const myToken = process.env.MYTOKEN;
 
   if (mode && token) {
     if (mode === "subcribe" && token === myToken) {
@@ -32,6 +34,9 @@ app.get("/webhooks", (req, res) => {
   }
 });
 
+
+
+//
 app.post("/webhooks", (req, res) => {
   let body_param = req.body;
   console.log(JSON.stringify(body_param, null, 2));
@@ -74,12 +79,13 @@ app.post("/webhooks", (req, res) => {
 
 app.listen(PORT, () => console.log("servidor iniciado en ", PORT));
 
-// sequelize
-//   .sync({ force: false })
-//   .then(() => {
-//     console.log("Conexion exitosa");
-//   })
-//   .catch((error) => {
-//     console.log("Se ha producido un error", error);
-//   });
-//
+//server
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Conexion exitosa");
+  })
+  .catch((error) => {
+    console.log("Se ha producido un error", error);
+  });
+
